@@ -1,5 +1,7 @@
 import scrapy
 from scrapy_splash import SplashRequest
+from scrapy.loader import ItemLoader
+from quotestoscrape.items import QuoteItem
 
 
 class QuoteSpider(scrapy.Spider):
@@ -25,13 +27,27 @@ class QuoteSpider(scrapy.Spider):
             })
 
     def parse(self, response):
-        quotes = response.xpath("//div[@class='quote']")
-        for quote in quotes:
-            yield {
-                'text': quote.xpath(".//span[@class='text']/text()").get(),
-                'author': quote.xpath(".//span[2]/small[@class='author']/text()").get(),
-                'tags': quote.xpath(".//div[@class='tags']/a/text()").getall()
-            }
+        """ This functions parses quotes 
+
+        @url http://quotes.toscrape.com/js
+        @returns items 1 10
+        @scrapes quote author tags
+        """
+        items = response.xpath("//div[@class='quote']")
+        for item in items:
+            quote_loader = ItemLoader(
+                item=QuoteItem(),
+                response=response
+            )
+
+            quote_loader.add_value('quote',
+                                   item.xpath(".//span[@class='text']/text()").get()[1:-1])
+            quote_loader.add_value('author',
+                                   item.xpath(".//span[2]/small[@class='author']/text()").get())
+            quote_loader.add_value('tags', item.xpath(
+                ".//div[@class='tags']/a/text()").getall())
+
+            yield quote_loader.load_item()
 
         next_page = response.xpath("//li[@class='next']/a/@href").get()
 

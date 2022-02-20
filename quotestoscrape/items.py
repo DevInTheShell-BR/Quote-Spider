@@ -1,18 +1,8 @@
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/items.html
-
 import scrapy
-
-
-class QuotestoscrapeItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+from scrapy.loader.processors import TakeFirst
 
 
 class QuoteItem(scrapy.Item):
-    quote = scrapy.Field()
-    author = scrapy.Field()
+    quote = scrapy.Field(output_processor=TakeFirst())
+    author = scrapy.Field(output_processor=TakeFirst())
     tags = scrapy.Field()
