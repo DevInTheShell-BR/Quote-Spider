@@ -1,6 +1,5 @@
 __pycache__/
 .scrapy
-result.json
 
 # Environments
 .env
